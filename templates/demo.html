@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo - SafeResQ</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+  <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+  <style>
+/* SafeResQ Next-Level Theme for Demo Page */
+@import url('https://fonts.googleapis.com/css2?family=Audiowide&family=Space+Grotesk:wght@300..700&display=swap');
+* {
+  font-family: 'Space Grotesk', sans-serif;
+}
+body {
+  font-family: 'Space Grotesk', Arial, sans-serif;
+  background: linear-gradient(45deg, #0f2027 0%, #2c5364 100%);
+  color: #e0f7fa;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  transition: background 0.5s;
+}
+
+.demo-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 38px 0 18px 0;
+  justify-content: center;
+  background: rgba(0,255,147,0.07);
+  border-bottom: 2px solid #00ff93;
+  box-shadow: 0 2px 16px rgba(0,255,147,0.08);
+}
+
+.demo-logo {
+  width: 56px;
+  height: 56px;
+  background: url('https://i.ibb.co/HfWzC5D8/logo.png') center/contain no-repeat;
+  border-radius: 50%;
+  box-shadow: 0 2px 12px rgba(0,255,147,0.15);
+  border: 2px solid #00ff93;
+}
+
+.demo-title {
+  font-family: 'Audiowide', sans-serif;
+  font-size: 2.5rem;
+  color: #00ff93;
+  font-weight: 500;
+  /* letter-spacing: 2.5px; */
+  text-shadow: 0 2px 12px #00ff9344;
+}
+
+#map {
+  height: 60vh;
+  width: 96%;
+  max-width: 900px;
+  margin: 24px auto 18px auto;
+  border-radius: 22px;
+  box-shadow: 0 4px 32px rgba(0,255,147,0.12);
+  border: 2.5px solid #00ff93;
+  transition: box-shadow 0.3s;
+}
+
+#controls {
+  max-width: 700px;
+  margin: 0 auto 32px auto;
+  background: rgba(0,255,147,0.09);
+  border-radius: 22px;
+  box-shadow: 0 2px 18px rgba(0,255,147,0.12);
+  padding: 38px 32px 32px 32px;
+  border: 1.5px solid #00ff93;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+#profileForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+}
+
+#profileForm input,
+#profileForm select {
+  font-family: inherit;
+  font-size: 1.15rem;
+  padding: 12px 18px;
+  border-radius: 50px;
+  border: 2px solid #00ff93;
+  background: rgba(255,255,255,0.10);
+  color: #00ff93;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  min-width: 130px;
+  box-shadow: 0 2px 8px rgba(0,255,147,0.08);
+}
+
+#profileForm input:focus,
+#profileForm select:focus {
+  border-color: #00d6a8;
+  box-shadow: 0 2px 12px rgba(0,255,147,0.18);
+}
+
+#profileForm button {
+  background: linear-gradient(90deg, #00ff93 60%, #00d6a8 100%);
+  color: #222;
+  font-weight: bold;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 32px;
+  font-size: 1.15rem;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(0,255,147,0.14);
+  transition: all 0.2s, box-shadow 0.2s;
+}
+
+#profileForm button:hover {
+  /* background: linear-gradient(90deg, #00d6a8 60%, #00ff93 100%); */
+  box-shadow: 0 4px 18px rgba(0,255,147,0.22);
+  scale: 1.1;
+}
+
+button {
+  background: linear-gradient(90deg, #00ff93 60%, #00d6a8 100%);
+  color: #222;
+  font-weight: bold;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 32px;
+  font-size: 1.15rem;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(0,255,147,0.14);
+  transition: all 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+  /* background: linear-gradient(90deg, #00d6a8 60%, #00ff93 100%); */
+  box-shadow: 0 4px 18px rgba(0,255,147,0.22);
+  scale: 1.05;
+}
+
+option {
+  background: #000;
+}
+select.decorated option:hover {
+    box-shadow: 0 0 10px 100px #1882A8 inset;
+}
+
+@media (max-width: 900px) {
+  #map {
+    width: 99%;
+    border-radius: 50px;
+    margin-bottom: 10px;
+  }
+  #controls {
+    padding: 18px 8px 12px 8px;
+    border-radius: 50px;
+  }
+  #profileForm button:hover {
+  /* background: linear-gradient(90deg, #00d6a8 60%, #00ff93 100%); */
+  box-shadow: 0 4px 18px rgba(0,255,147,0.22);
+  scale: 1;
+}
+button:hover {
+  /* background: linear-gradient(90deg, #00d6a8 60%, #00ff93 100%); */
+  box-shadow: 0 4px 18px rgba(0,255,147,0.22);
+  scale: 1;
+}
+}
+
+@media (max-width: 700px) {
+  .demo-header {
+    flex-direction: column;
+    gap: 8px;
+    padding: 18px 0 8px 0;
+  }
+  .demo-title {
+    font-size: 1.5rem;
+  }
+  #controls {
+    padding: 12px 4px 8px 4px;
+    border-radius: 20px;
+  }
+  #map {
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  #profileForm input,
+  #profileForm select {
+    min-width: 90px;
+    font-size: 0.95rem;
+    padding: 8px 10px;
+  }
+  #profileForm button,
+  button {
+    padding: 8px 16px;
+    font-size: 1rem;
+  }
+}
+  </style>
+</head>
+<body>
+  <a href="/home" style="text-decoration: none;">
+  <div class="demo-header">
+    <div class="demo-logo"></div>
+    <div class="demo-title">SafeResQ Demo</div>
+  </div>
+  </a>
+  <div id="map"></div>
+  <div id="controls">
+    <form id="profileForm">
+      <input type="text" id="name" placeholder="Name" required>
+      <select id="gender" required>
+        <option value="">Select Gender</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+      </select>
+      <input type="number" id="age" placeholder="Age" min="1" max="120" required>
+      <button type="submit">Save Profile</button>
+    </form>
+    <button id="clearPins">Clear All Pins</button>
+    <button id="updateAdminMap">Update Admin Map</button>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([20.0, 77.0], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    const pins = [];
+    const deviceId = localStorage.getItem('deviceId') || crypto.randomUUID();
+    localStorage.setItem('deviceId', deviceId);
+
+    const profileForm = document.getElementById('profileForm');
+    const nameInput = document.getElementById('name');
+    const genderInput = document.getElementById('gender');
+    const ageInput = document.getElementById('age');
+    const clearPinsButton = document.getElementById('clearPins');
+    const updateAdminMapButton = document.getElementById('updateAdminMap');
+
+    let userInfo = JSON.parse(localStorage.getItem('userInfo')) || {};
+    nameInput.value = userInfo.name || '';
+    genderInput.value = userInfo.gender || '';
+    ageInput.value = userInfo.age || '';
+
+    profileForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      userInfo = {
+        name: nameInput.value.trim(),
+        gender: genderInput.value,
+        age: ageInput.value
+      };
+      localStorage.setItem('userInfo', JSON.stringify(userInfo));
+      alert('Profile saved! Click on the map to pin a location.');
+    });
+
+    map.on('click', (e) => {
+      const { lat, lng } = e.latlng;
+      // Store info with pin
+      const pinInfo = {
+        deviceId: `${deviceId}-${pins.length + 1}`,
+        status: 'SOS',
+        name: userInfo.name,
+        gender: userInfo.gender,
+        age: userInfo.age,
+        lat,
+        lon: lng,
+        timestamp: new Date().toISOString()
+      };
+      const pin = L.marker([lat, lng])
+        .addTo(map)
+        .bindPopup(`${pinInfo.name}, ${pinInfo.age} (${pinInfo.gender})`);
+      pin.pinInfo = pinInfo; // Attach info to pin object
+      pins.push(pin);
+
+      // Send SOS to server
+      fetch('/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(pinInfo)
+      }).then(() => {
+        alert('SOS sent!');
+      }).catch(console.error);
+    });
+
+    clearPinsButton.addEventListener('click', () => {
+      pins.forEach(pin => map.removeLayer(pin));
+      // Remove all SOS entries for all pin deviceIds
+      const removePromises = pins.map((pin, idx) => {
+        const pinDeviceId = `${deviceId}-${idx + 1}`;
+        return fetch('/removeSOS', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ deviceId: pinDeviceId })
+        });
+      });
+      Promise.all(removePromises).then(() => {
+        alert('All pins cleared!');
+        pins.length = 0;
+      }).catch(console.error);
+    });
+
+    updateAdminMapButton.addEventListener('click', () => {
+  const pinData = pins.map(pin => pin.pinInfo);
+  fetch('/updateAdminMap', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(pinData)
+  }).then(() => {
+    alert('Admin map updated!');
+  }).catch(console.error);
+});
+  </script>
+</body>
+</html>

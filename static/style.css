@@ -1,0 +1,247 @@
+@import url("https://fonts.googleapis.com/css2?family=Audiowide&family=Space+Grotesk:wght@300..700&display=swap");
+/* Add these at the top of your CSS file */
+/* html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+} */
+
+* {
+  font-family: "Space Grotesk", sans-serif;
+  scrollbar-width: none;
+}
+h1 {
+  font-family: "Audiowide", sans-serif;
+  font-weight: 500;
+}
+body {
+  /* font-family: '', 'Bauhaus 93', sans-serif; */
+  background: #121212;
+  color: white;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: auto;
+}
+footer {
+  text-align: center;
+  padding: 20px;
+  border-top: 1px solid #333;
+  color: #777;
+  width: 100%;
+}
+nav {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 3px 5px;
+  z-index: 999;
+  display: flex;
+  /* justify-content: space-between; */
+  gap: 20px;
+  align-items: center;
+}
+.logo {
+  background: url("logo.png");
+  background-position: center;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  width: 60px;
+  height: 60px;
+}
+.logotext {
+  font-size: 20px;
+  color: #00ff93;
+  font-weight: bold;
+  font-family: "Space Grotesk", sans-serif;
+}
+nav a {
+  text-decoration: none;
+  color: #fff;
+  font-size: 17px;
+}
+.em {
+  /* margin-right: 10px; */
+  position: absolute;
+  right: 20px;
+  background: #f44336;
+  padding: 8px 10px;
+  border-radius: 20px;
+  transition: all 0.3s;
+}
+.em:hover {
+  background: #941e15;
+  transform: scale(1.1);
+}
+.container {
+  width: 90%;
+  max-width: 500px;
+  padding: 20px;
+  margin: 70px 0 10px;
+  background: #222;
+  border-radius: 10px;
+  box-shadow: 0 0 10px 7px rgba(0, 0, 0, 0.4);
+}
+
+h1 {
+  color: #00ff93;
+  text-align: center;
+  /* margin-bottom: 30px; */
+  margin: 0;
+  font-size: 3.5rem;
+  /* letter-spacing: 3.5px; */
+  /* font-variant: ; */
+  /* font-family: "Anurati", "TW Cen MT", 'Agency FB', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; */
+}
+
+input,
+select {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 5px;
+  background: #333;
+  color: white;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+button {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  margin: 20px 0 !important;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+#userForm button,
+#saveEmailSettings {
+  background: #17c77e;
+  color: black;
+}
+
+#sendEmailsNow {
+  background: #ff5100;
+  color: black;
+}
+
+#sosButton {
+  margin-top: 30px;
+  padding: 30px;
+  border-radius: 50px;
+}
+
+.green {
+  background-color: #00ff93;
+  color: black;
+}
+
+.red {
+  background-color: #f44336;
+  color: white;
+}
+
+#gpsStatus {
+  text-align: center;
+  margin: 20px 0;
+  min-height: 20px;
+  font-size: 14px;
+}
+
+/* Add these styles to your existing CSS */
+#userMap {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+#mapContainer {
+  display: block !important;
+  position: relative;
+  height: 300px;
+  width: 100%;
+  margin-top: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #444;
+  z-index: 0; /* Ensure proper stacking */
+}
+
+/* Fix Leaflet tiles */
+.leaflet-tile-container img {
+  width: 256px !important;
+  height: 256px !important;
+}
+
+.leaflet-container {
+  background: #222 !important;
+}
+
+#mapInstructions {
+  display: none;
+  text-align: center;
+  font-size: 14px;
+  color: #aaa;
+  margin-top: 5px;
+}
+
+@media (max-width: 500px) {
+  .container {
+    width: 95%;
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 36px;
+  }
+
+  #mapContainer {
+    height: 250px;
+  }
+
+  #sosButton {
+    font-size: 14px;
+  }
+}
+
+#removeMarkerButton {
+  display: flex !important; /* Ensure it overrides any conflicting styles */
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  width: 20px;
+  height: 20px;
+  font-size: 15px;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #ff0059;
+}
+
+/* Crosshair cursor for manual admin location placement */
+.leaflet-container.crosshair-mode,
+.leaflet-container.crosshair-mode .leaflet-interactive,
+.leaflet-container.crosshair-mode .leaflet-marker-icon,
+.leaflet-container.crosshair-mode .leaflet-pane,
+.leaflet-container.crosshair-mode .leaflet-overlay-pane,
+.leaflet-container.crosshair-mode .leaflet-marker-shadow {
+  cursor: crosshair !important;
+}

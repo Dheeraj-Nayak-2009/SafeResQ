@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rescue Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <link rel="shortcut icon" href="{{ url_for('static', filename='logo.png') }}" type="image/x-icon">
+  <script>
+    // on load scroll to top left
+    window.onload = function() {
+      window.scrollTo(0, 0);
+    };
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
+    * {
+      font-family: "Space Grotesk", sans-serif;
+      user-select: none;
+      outline: none;
+    }
+    html, body {
+      /* position: fixed;  Prevent touch scroll bounce */
+      touch-action: none; /* Prevent swipe scrolling */
+    }
+    html {
+      overflow: hidden;
+    }
+    body {
+      overflow: hidden;
+      color: white;
+    }
+    body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    #map { height: 100vh; width: 100%; }
+    #controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      background: rgb(37, 37, 37);
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    button {
+      padding: 8px 12px;
+      margin: 5px;
+      cursor: pointer;
+      background: #233333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      display: flex;
+      width: calc(100% - 10px);
+      transition: all 0.3s;
+      gap: 10px;
+    }
+    button:hover {
+      background: #486b6b;
+    }
+    .info-popup { margin-bottom: 32px; }  
+    
+    /* New styles for list view */
+    #listView {
+      position: absolute;
+      top: 0;
+      right: -400px;
+      width: 370px;
+      height: 100vh;
+      background: #121212;
+      z-index: 1002;
+      transition: right 0.3s;
+      overflow-y: auto;
+      padding: 15px;
+      box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+      -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+    }
+    #listView h2 {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+    #listView.visible {
+      right: 0;
+    }
+    #listView.visible ~ #controls {
+      right: 400px;
+    }
+    .sos-item {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      display: flex;
+      align-items: center;
+    }
+    .sos-icon {
+      width: 40px;
+      height: 40px;
+      background-color: rgba(0, 164, 156, 0.959);
+      border-radius: 50%;
+      margin-right: 15px;
+      background-size: 90%;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .sos-details {
+      flex: 1;
+    }
+    .sos-name {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .sos-meta {
+      font-size: 0.9em;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    .sos-distance {
+      font-weight: bold;
+      color: #d63384;
+    }
+    #adminLocationBtn {
+      background-color: #00be92;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 12px;
+      margin: 5px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    #adminLocationBtn.active {
+      background-color: #009e79;
+    }
+    #toggleListViewBtn {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      z-index: 1003;
+      background-color: #00be92;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 12px;
+      cursor: pointer;
+      width: 40px;
+    }
+button:disabled {
+    background-color: light-dark(rgba(84, 223, 175, 0.3), rgba(19, 1, 1, 0.3)) !important;
+    color: light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
+    border-color: light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3));
+}
+
+  /* Filter popup styles */
+  #filterPopup {
+    width: 400px;
+    display: none;
+    position: absolute;
+    top: 50px;
+    left: 10px;
+    background: #121212;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+  }
+  #filterPopup input, #filterPopup select, #filterPopup button {
+    margin: 5px 0;
+    padding: 8px;
+    width: 100%;
+    border: none;
+    border-radius: 5px;
+  }
+  #filterPopup button {
+    background: #00be92;
+    color: white;
+    cursor: pointer;
+  }
+  #filterPopup button:hover {
+    background: #009e79;
+  }
+  #minAge,#maxAge {
+    width: calc(100% - 15px) !important;
+  }
+
+  #listView::after {
+    content: '';
+    display: block;
+    height: 50px; /* Adjust the height as needed for the desired gap */
+  }
+  h1 {
+    font-weight: 500;
+    font-size: 2.5rem;
+    color: #21af74;
+    text-align: center;
+    margin: 0;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1001;
+    font-family: "Audiowide", sans-serif;
+  }
+  #prot {
+    background: rgba(0, 0, 0);
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 100000;
+  }
+  #prot h1{
+    background: rgba(0, 0, 0);
+    width: 100%;
+    /* height: 100vh; */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 100000;
+  }
+
+  #prot form input {
+    /* width: calc(50% - 20px); */
+    padding: 5px 20px;
+    border: none;
+    background: #333;
+    border-radius: 20px;
+    margin-top: 10px;
+    font-size: 16px;
+    transition: all 0.3s;
+    color: #fff;
+    font-family: "Space Grotesk", sans-serif;
+  }
+  #prot form input:focus {
+    box-shadow: 0 0 10px #22ffcc;
+    z-index: 1003;
+    scale: 1.1;
+  }
+  #prot form button {
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 20px;
+    /* text-align: center; */
+    display: flex;
+    justify-content: center;
+    background: #1e7d67;
+    font-size: 20px;
+  }
+  #prot form button:hover {
+    background: #00be92;
+  }
+
+  .leaflet-top {
+    top: 50px !important;
+  }
+  .mobrespt {
+    font-size: 2.5rem;
+  }
+
+  @media only screen and (max-width: 600px) {
+    .mobresp{
+      flex-direction: column !important;
+      /* align-items: stretch; */
+    }
+    .mobrespt {
+      font-size: 1.5rem;
+    }
+  }
+  </style>
+</head>
+<body>
+  <!-- Protection -->
+  <div id="prot">
+    <form>
+    <h1>Admin Login</h1>
+    <div class="mobresp" style="display: flex; justify-content: center; gap: 2px">
+      <input type="text" id="username" placeholder="Username" required>
+      <input type="password" id="password" placeholder="Password" required>
+    </div>
+      <button type="submit">Login</button>
+    </form>
+  </div>
+  <h1 class="mobrespt">SafeResQ</h1>
+    <button id="toggleListViewBtn"><img src="https://cdn-icons-png.flaticon.com/512/54/54410.png" alt="ToggleListView" height="20px" height="20px"></button>
+  <div id="map"></div>
+  <div id="controls">
+    <button id="adminLocationBtn"><img src="https://cdn-icons-png.flaticon.com/128/14831/14831599.png" width="25" alt="">My Location</button>
+    <button id="refreshBtn"><img src="https://cdn-icons-png.flaticon.com/128/10695/10695869.png" width="20" alt=""> Refresh</button>
+    <button id="removeBtn" disabled><img src="https://cdn-icons-png.flaticon.com/128/458/458594.png" alt="X" width="20"> Remove Camp</button>
+    <button id="addCampBtn"><img src="https://cdn-icons-png.flaticon.com/512/12536/12536310.png" alt="X" width="20">  Add Relief Camp</button>
+    <button id="saveCampsBtn"><img src="https://cdn-icons-png.flaticon.com/512/489/489707.png" alt="X" width="20">  Save Camps</button>
+    <div id="counter">0 Active Emergencies</div>
+  </div>
+  
+  <div id="listView">
+    <h2>Active Emergencies</h2>
+    <div id="sosList"></div>
+  </div>
+
+  <div id="filterPopup">
+    <h3>Filters</h3>
+    <label>Distance:</label>
+    <select id="distanceFilter">
+      <option value="">None</option>
+      <option value="asc">Least to Highest</option>
+      <option value="desc">Highest to Least</option>
+    </select>
+
+    <label>Gender:</label>
+    <select id="genderFilter">
+      <option value="">All</option>
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select>
+
+    <label>Age Group:</label>
+    <input type="number" id="minAge" placeholder="Min Age">
+    <input type="number" id="maxAge" placeholder="Max Age">
+
+    <button id="applyFilters">Apply Filters</button>
+    <button id="clearFilters">Clear Filters</button>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="{{ url_for('static', filename='admin.js') }}"></script>
+  <script>
+  const filterPopup = document.getElementById('filterPopup');
+  const distanceFilter = document.getElementById('distanceFilter');
+  const genderFilter = document.getElementById('genderFilter');
+  const minAgeInput = document.getElementById('minAge');
+  const maxAgeInput = document.getElementById('maxAge');
+  const applyFiltersButton = document.getElementById('applyFilters');
+  const clearFiltersButton = document.getElementById('clearFilters');
+  const toggleFilterButton = document.createElement('button');
+
+  toggleFilterButton.textContent = 'Filters';
+  toggleFilterButton.style.marginLeft = '10px';
+  toggleFilterButton.style.width = '100px';
+  toggleFilterButton.style.padding = '8px';
+  toggleFilterButton.style.background = '#00be92';
+  toggleFilterButton.style.color = 'white';
+  toggleFilterButton.style.border = 'none';
+  toggleFilterButton.style.borderRadius = '4px';
+  toggleFilterButton.style.cursor = 'pointer';
+  toggleFilterButton.addEventListener('click', () => {
+    filterPopup.style.display = filterPopup.style.display === 'none' ? 'block' : 'none';
+  });
+
+  document.querySelector('#listView h2').appendChild(toggleFilterButton);
+
+  let filters = { distance: '', gender: '', minAge: '', maxAge: '' };
+
+  applyFiltersButton.addEventListener('click', () => {
+    filters.distance = distanceFilter.value;
+    filters.gender = genderFilter.value;
+    filters.minAge = minAgeInput.value;
+    filters.maxAge = maxAgeInput.value;
+    updateFilteredView();
+    filterPopup.style.display = 'none';
+  });
+
+  clearFiltersButton.addEventListener('click', () => {
+    filters = { distance: '', gender: '', minAge: '', maxAge: '' };
+    distanceFilter.value = '';
+    genderFilter.value = '';
+    minAgeInput.value = '';
+    maxAgeInput.value = '';
+    updateFilteredView();
+    filterPopup.style.display = 'none';
+  });
+
+  function updateFilteredView() {
+    const emergencies = Object.values(markers).map(m => m.emergency);
+    const filteredEmergencies = emergencies.filter(emergency => {
+      if (filters.gender && emergency.gender !== filters.gender) return false;
+      if (filters.minAge && emergency.age < filters.minAge) return false;
+      if (filters.maxAge && emergency.age > filters.maxAge) return false;
+      return true;
+    });
+
+    if (filters.distance) {
+      filteredEmergencies.sort((a, b) => {
+        const distA = calculateDistance(adminPosition.lat, adminPosition.lng, a.lat, a.lon);
+        const distB = calculateDistance(adminPosition.lat, adminPosition.lng, b.lat, b.lon);
+        return filters.distance === 'asc' ? distA - distB : distB - distA;
+      });
+    }
+
+    updateListView(filteredEmergencies);
+    updateMapMarkers(filteredEmergencies);
+  }
+
+  function updateMapMarkers(filteredEmergencies) {
+    Object.keys(markers).forEach(id => {
+      const marker = markers[id];
+      if (filteredEmergencies.some(e => e.deviceId === id)) {
+        marker.marker.addTo(map);
+        if (marker.circle) marker.circle.addTo(map);
+      } else {
+        map.removeLayer(marker.marker);
+        if (marker.circle) map.removeLayer(marker.circle);
+      }
+    });
+  }
+
+  // Modify updateEmergencies to apply filters consistently
+  async function updateEmergencies() {
+    try {
+      const response = await fetch('/getActiveSOS');
+      const emergencies = await response.json();
+
+      counter.textContent = `${emergencies.length} Active Emergencies`;
+
+      // Remove old markers
+      Object.keys(markers).forEach(id => {
+        if (!emergencies.some(e => e.deviceId === id)) {
+          if (selectedMarkerId === id) {
+            selectedMarkerId = null;
+            removeBtn.disabled = true;
+          }
+          map.removeLayer(markers[id].marker);
+          if (markers[id].circle) map.removeLayer(markers[id].circle);
+          delete markers[id];
+        }
+      });
+
+      // Add/update markers
+      emergencies.forEach(emergency => {
+        const { deviceId, lat, lon, name, gender, age, accuracy, isManual, timestamp } = emergency;
+
+        let icon;
+        if (isManual) {
+          icon = gender === 'female' ? femaleManualIcon : maleManualIcon;
+        } else {
+          icon = gender === 'female' ? femaleIcon : maleIcon;
+        }
+
+        if (!markers[deviceId]) {
+          const marker = L.marker([lat, lon], { icon })
+            .addTo(map)
+            .bindPopup(createEmergencyPopupContent(emergency))
+            .on('click', () => selectEmergency(deviceId));
+
+          let circle = null;
+          if (!isManual && accuracy > 0) {
+            const circleColor = gender === 'female' ? '#d63384' : '#0d6efd';
+            circle = L.circle([lat, lon], {
+              radius: accuracy,
+              color: circleColor,
+              fillOpacity: 0.2
+            }).addTo(map);
+          }
+
+          markers[deviceId] = { marker, circle, emergency };
+        } else {
+          markers[deviceId].emergency = emergency;
+          markers[deviceId].marker.setLatLng([lat, lon]);
+          markers[deviceId].marker.setPopupContent(createEmergencyPopupContent(emergency));
+
+          if (selectedMarkerId !== deviceId) {
+            markers[deviceId].marker.setIcon(icon);
+          }
+
+          if (markers[deviceId].circle) {
+            markers[deviceId].circle.setLatLng([lat, lon]);
+            markers[deviceId].circle.setRadius(accuracy);
+          }
+        }
+      });
+
+      // Apply filters before updating the view
+      const filteredEmergencies = emergencies.filter(emergency => {
+        if (filters.gender && emergency.gender !== filters.gender) return false;
+        if (filters.minAge && emergency.age < filters.minAge) return false;
+        if (filters.maxAge && emergency.age > filters.maxAge) return false;
+        return true;
+      });
+
+      if (filters.distance) {
+        filteredEmergencies.sort((a, b) => {
+          const distA = calculateDistance(adminPosition.lat, adminPosition.lng, a.lat, a.lon);
+          const distB = calculateDistance(adminPosition.lat, adminPosition.lng, b.lat, b.lon);
+          return filters.distance === 'asc' ? distA - distB : distB - distA;
+        });
+      }
+
+      updateListView(filteredEmergencies);
+      updateMapMarkers(filteredEmergencies);
+    } catch (error) {
+      console.error('Error:', error);
+      counter.textContent = 'Error loading data';
+    }
+  }
+</script>
+<script>
+  // if admin enters password is psswd and id is admin hide the prot
+  // on form submission
+  const form = document.querySelector('form');
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const password = form.querySelector('input[type="password"]').value;
+    const id = form.querySelector('input[type="text"]').value;
+    if (password === 'psswd' && id === 'admin') {
+      document.getElementById('prot').style.display = 'none';
+    }
+  });
+</script>
+<script>
+  // Hide admin login if ?id=... is present in URL
+  window.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('id')) {
+      document.getElementById('prot').style.display = 'none';
+    }
+  });
+</script>
+</body>
+</html>

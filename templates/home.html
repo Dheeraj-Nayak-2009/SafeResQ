@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SafeResQ – Emergency Rescue Broadcast</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Audiowide&family=Space+Grotesk:wght@300..700&display=swap');
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scrollbar-width: none;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Space Grotesk', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0e0e0e;
+      color: #f3f3f3;
+      line-height: 1.6;
+      background-image: linear-gradient(45deg, #00f85d0f, #000000, #00f85d0f);
+    }
+
+    header {
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(12px);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 3px 5px;
+      z-index: 999;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    header h1 {
+      font-size: 1.5rem;
+      color: #00ff93;
+      /* letter-spacing: 1px; */
+      font-family: 'Audiowide', sans-serif;
+      font-weight: 500;
+    }
+
+    nav a {
+      color: #fff;
+      /* margin-left: 20px; */
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #00ff93;
+    }
+
+    section {
+      padding: 100px 20px 60px;
+      /* max-width: 900px; */
+      margin: auto;
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.6s ease-out;
+    }
+
+    section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      padding: 0 20px;
+      border-bottom: 1px solid rgb(87, 87, 87);
+    }
+
+    .hero h2 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #00ff93;
+      font-family: 'Audiowide', sans-serif;
+      font-weight: 500;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: #bbb;
+      margin-bottom: 2rem;
+    }
+
+    .hero a {
+      margin-top: 5px;
+      display: inline-block;
+      padding: 0.8rem 2rem;
+      background: #00ff93;
+      color: #000;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .hero a:hover {
+      background: #00d6a8;
+    }
+
+    h3 {
+      color: #00ff93;
+      margin-bottom: 10px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 20px;
+      border-top: 1px solid #333;
+      color: #777;
+    }
+
+    .logo {
+        width: 60px;
+        display: block;
+        height: 60px;
+        background: url('logo.png') no-repeat center center;
+        background-size: cover;
+    }
+    .hero .em {
+        margin-top: 20px;
+        font-size: 1.5rem;
+        background: #ff4c4c;
+        font-weight: bold;
+    }
+    .hero .em:hover {
+        background: #ff2222;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      gap: 5px;
+    }
+
+    .hamburger div {
+      width: 25px;
+      height: 2px;
+      background-color: white;
+      border-radius: 10px;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+
+    ul {
+      margin-left: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .hero h2 {
+        font-size: 2.2rem;
+      }
+
+      nav a {
+        margin-left: 10px;
+        font-size: 0.9rem;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        right: 10px;
+        background-color: rgba(0, 0, 0, 0.8);
+        padding: 10px;
+        border-radius: 5px;
+      }
+
+      .nav-links.active {
+        display: flex;
+      }
+    }
+  </style>
+  <!-- <link rel="stylesheet" href="style.css"> -->
+  <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+</head>
+<body>
+  <header>
+    <a href="/home">
+      <div style="display: flex; align-items: center;">
+        <span class="logo"></span>
+        <h1>SafeResQ</h1>
+      </div>
+    </a>
+    <nav>
+      <div class="hamburger" id="hamburger">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#intro">Intro</a></li>
+        <li><a href="#problem">Problem</a></li>
+        <li><a href="#solution">Solution</a></li>
+        <li><a href="#utility">Utility</a></li>
+        <li><a href="#conclusion">Conclusion</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h2>SafeResQ</h2>
+    <p>Real-Time Emergency Rescue Communication System</p>
+    <div style="display: flex; gap: 10px;"><a href="#intro" style="flex: 1">Learn More</a><a href="/about" style="flex: 1">About</a></div>
+    <a href="/" class="em">Emergency</a>
+  </section>
+
+  <section id="intro">
+    <h3>Introduction</h3>
+    <p>
+      Emergencies can strike at any time—medical incidents, accidents, personal safety threats, or disasters. SafeResQ is a simple web-based emergency status system that helps people quickly update their safety status and location to assist responders, family, and rescue teams.
+    </p>
+  </section>
+
+  <section id="problem">
+    <h3>The Problem</h3>
+    <p>
+      During emergencies, people lose contact with family or rescue services. Phone calls may work, but lack of information and contact leads to chaos, misinformation, and delayed help. There's no quick way to broadcast one's safety status and location to those who matter.
+    </p>
+  </section>
+
+  <section id="solution">
+    <h3>Our Solution</h3>
+    <p>
+      SafeResQ allows users to instantly update their real-time safety status and location. This data is accessible by responders, family, or authorized personnel, helping coordinate and prioritize rescue or assistance efforts effectively—even under poor network conditions.
+    </p>
+    <ul>
+      <li>Frontend: HTML, CSS, JS</li>
+      <li>Backend: Node.js</li>
+      <li>Database: Lightweight storage with timestamps</li>
+      <li>Admin Dashboard for responders</li>
+    </ul>
+  </section>
+
+  <section id="utility">
+    <h3>Utility & Impact</h3>
+    <ul>
+      <li>Real-time safety updates for anyone in need</li>
+      <li>Mobile-friendly, works on low connectivity</li>
+      <li>Can be used for medical, accident, personal safety, or disaster emergencies</li>
+      <li>No app install needed – works on any browser</li>
+    </ul>
+  </section>
+
+  <section id="conclusion">
+    <h3>Conclusion</h3>
+    <p>
+      SafeResQ is a modern and practical emergency broadcast tool. It bridges the gap between people in need and those who can help, offering a simple way to communicate critical safety information in real time. Scalable and secure, it holds immense potential for all types of emergency response systems.
+    </p>
+  </section>
+
+  <section>
+    
+    <div style="display: flex; flex-direction: column; gap: 10px;"><h1>Just for Demonstration</h1><a href="/demo">Demo</a><a href="/admin">Admin</a></div>
+  </section>
+
+  <footer>© 2025, Made with 💖 for INSPIRE AWARDS</footer>
+
+  <script>
+    // Scroll reveal animation
+    const sections = document.querySelectorAll("section");
+
+    const reveal = () => {
+      const triggerBottom = window.innerHeight * 0.85;
+
+      sections.forEach((sec) => {
+        const sectionTop = sec.getBoundingClientRect().top;
+
+        if (sectionTop < triggerBottom) {
+          sec.classList.add("visible");
+        }
+      });
+    };
+
+    window.addEventListener("scroll", reveal);
+    window.addEventListener("load", reveal);
+
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+
+    hamburger.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+    });
+  </script>
+</body>
+</html>

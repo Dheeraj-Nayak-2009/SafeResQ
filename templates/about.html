@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About SafeResQ - Emergency Rescue Communication System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='logo.png') }}" type="image/x-icon">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Audiowide&family=Space+Grotesk:wght@300..700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .about-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 120px 20px 60px;
+            line-height: 1.8;
+        }
+        
+        .about-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .about-header h1 {
+            font-size: 3rem;
+            color: #00ff93;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .about-header span {
+            font-family: 'Audiowide', sans-serif;
+            font-weight: 500;
+        }
+        
+        .about-header .tagline {
+            font-size: 1.3rem;
+            color: #bbb;
+            font-weight: 300;
+        }
+        
+        .about-section {
+            margin-bottom: 50px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(0, 255, 147, 0.2);
+        }
+        
+        .about-section h2 {
+            color: #00ff93;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #00ff93;
+            padding-bottom: 10px;
+        }
+        
+        .about-section h3 {
+            color: #00d6a8;
+            font-size: 1.4rem;
+            margin: 25px 0 15px;
+        }
+        
+        .about-section p {
+            margin-bottom: 15px;
+            color: #e0e0e0;
+            font-size: 1.1rem;
+        }
+        
+        .about-section ul {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .about-section li {
+            margin-bottom: 10px;
+            color: #e0e0e0;
+            font-size: 1.05rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .feature-card {
+            background: rgba(0, 255, 147, 0.1);
+            padding: 25px;
+            border-radius: 0 10px 10px 0;
+            border-left: 4px solid #00ff93;
+        }
+        
+        .feature-card h4 {
+            color: #00ff93;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .team-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .team-member {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        .team-member h4 {
+            color: #00ff93;
+            margin-bottom: 5px;
+        }
+        
+        .team-member p {
+            color: #bbb;
+            font-size: 0.9rem;
+        }
+        
+        .cta-section {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(0, 255, 147, 0.1), rgba(0, 255, 147, 0.05));
+            border-radius: 15px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: #00ff93;
+            color: #000;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        
+        .cta-button:hover {
+            background: #00d6a8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 147, 0.3);
+        }
+        
+        .emergency-button {
+            background: #ff4c4c;
+            color: white;
+        }
+        
+        .emergency-button:hover {
+            background: #ff2222;
+            box-shadow: 0 5px 15px rgba(255, 76, 76, 0.3);
+        }
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            border-top: 1px solid #333;
+            color: #777;
+            width: 100%;
+        }
+        
+        @media (max-width: 768px) {
+            .about-container {
+                padding: 100px 15px 40px;
+            }
+            
+            .about-header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .about-section {
+                padding: 20px;
+            }
+        }
+/* Initial state for animation */
+.about-section,
+.feature-card {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s ease;
+}
+
+/* When visible */
+.animate {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Small delay for feature cards */
+.feature-card:nth-child(1) { transition-delay: 0.1s; }
+.feature-card:nth-child(2) { transition-delay: 0.2s; }
+.feature-card:nth-child(3) { transition-delay: 0.3s; }
+.feature-card:nth-child(4) { transition-delay: 0.4s; }
+
+    </style>
+</head>
+<body>
+    <nav>
+        <div style="display: flex; align-items: center;">
+        <div class="logo"></div>
+        <h1 style="font-size: 1.5rem; font-family: 'Audiowide', sans-serif; font-weight: 500;">SafeResQ</h1>
+        </div>
+        <a href="/home">Home</a>
+        <a href="/about">About</a>
+        <a href="/demo">Demo</a>
+        <!-- <a href="/" class="em">Emergency</a> -->
+    </nav>
+
+    <div class="about-container">
+        <div class="about-header">
+            <h1>About <span>SafeResQ</span></h1>
+            <p class="tagline">Real-Time Emergency Rescue Communication System</p>
+        </div>
+
+        <div class="about-section">
+            <h2>🚨 Our Mission</h2>
+            <p>SafeResQ is a next-generation emergency communication platform designed to bridge the gap between people in any emergency and those who can help. Whether it's a medical crisis, accident, personal safety threat, or a large-scale disaster, our system provides a reliable, accessible way for anyone to broadcast their safety status and location to responders, family, or friends.</p>
+        </div>
+    <div class="about-section">
+        <h2>About the Development</h2>
+        <p>SafeResQ is a vision for a comprehensive emergency response system that leverages modern technology to enhance communication and coordination during any crisis. Our goal is to create a platform that is effective, user-friendly, and always within reach—no matter the situation.</p>
+    </div>
+
+    <div class="about-section">
+        <h2>🌍 Why SafeResQ Matters</h2>
+        <p>Emergencies can happen anywhere, anytime—medical incidents, accidents, personal threats, or natural disasters. The difference between safety and tragedy often comes down to speed and clarity of communication. SafeResQ ensures that no call for help goes unheard and no person remains unreachable.</p>
+        <p>Our platform empowers individuals to instantly send SOS alerts with their live location to responders, family, and emergency teams, cutting through confusion and saving precious minutes.</p>
+    </div>
+
+    <div class="about-section">
+        <h2>⚙️ How SafeResQ Works</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h4>📍 Live Location Tracking</h4>
+                <p>Automatically shares your real-time GPS coordinates with rescuers to ensure accurate and fast response.</p>
+            </div>
+            <div class="feature-card">
+                <h4>🚨 One-Tap SOS</h4>
+                <p>In an emergency, users can trigger an alert in seconds — no lengthy forms, just immediate action.</p>
+            </div>
+            <div class="feature-card">
+                <h4>🔒 Privacy First</h4>
+                <p>Your identity stays anonymous unless you choose to share details with the rescue team.</p>
+            </div>
+            <div class="feature-card">
+                <h4>📡 Continuous Updates</h4>
+                <p>The system keeps sending your updated location until the alert is marked as resolved.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="about-section">
+        <h2>🚑 Real-World Applications</h2>
+        <ul>
+            <li>Medical emergencies (heart attack, injury, allergic reaction, etc.)</li>
+            <li>Accidents at home, work, or on the road</li>
+            <li>Personal safety threats (crime, harassment, lost persons)</li>
+            <li>Natural disasters like earthquakes, floods, and landslides</li>
+            <li>Urban rescue operations during fires or building collapses</li>
+            <li>Any situation where rapid help is needed</li>
+        </ul>
+    </div>
+
+    <div class="about-section">
+        <h2>💡 Future Plans</h2>
+        <p>SafeResQ is constantly evolving to meet the challenges of emergency response. Our upcoming features include:</p>
+        <ul>
+            <li>Group & Family ID system to coordinate rescue for multiple people at once.</li>
+            <li>AI-powered danger detection to automatically trigger alerts in certain scenarios.</li>
+            <li>Integration with drones for faster location assessment in hard-to-reach areas.</li>
+            <li>Offline emergency mode for limited or no-network situations.</li>
+        </ul>
+    </div>
+
+    <div class="about-section">
+        <h2>🤝 Our Commitment</h2>
+        <p>SafeResQ is more than just an app — it’s a promise that no matter where you are, someone will know when you need help. We are committed to improving our technology, building strong partnerships with emergency services, and ensuring our platform remains accessible to everyone.</p>
+    </div>
+
+</div>
+<footer>© 2025, Made with 💖 for INSPIRE AWARDS</footer>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("animate");
+            }
+        });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.about-section, .feature-card').forEach(el => {
+        observer.observe(el);
+    });
+});
+</script>
+</body>
+</html>
